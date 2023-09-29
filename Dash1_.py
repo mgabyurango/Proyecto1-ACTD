@@ -18,6 +18,8 @@ from pgmpy.inference import VariableElimination
 from sklearn.metrics import f1_score
 from ucimlrepo import fetch_ucirepo
 from dash.dependencies import Input, Output
+
+
 # Creamos la red
  # fetch dataset 
 predict_students_dropout_and_academic_success = fetch_ucirepo(id=697) 
@@ -105,15 +107,23 @@ df=df = pd.DataFrame(data)
 
 
 # Creamos el dashboard
+colors = {
+    'background': '#111111',
+    'text': '#7FDBFF'
+}
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 app.layout = html.Div([
-    html.H1('Estimación de Riesgo de Deserción - Estudiantes Antiguos'),
+    html.H1('Estimación de Riesgo de Deserción - Estudiantes Antiguos',
+            style={
+            'textAlign': 'center',
+            'color': colors['text']
+        }),
     dcc.Input(id='codigo-input', type='number', placeholder='Código de estudiante'),
     html.Button('Buscar', id='buscar-button'),
     html.Div(id='nombre-output'),
-    html.Img(id='imagen-output', src='https://upload.wikimedia.org/wikipedia/commons/5/59/Empty.png?20091205084734',style={'width': '200px', 'height': '200px'}),
+    html.Img(id='imagen-output', src='',style={'width': '200px', 'height': '200px'}),
     html.Div(id='probabilidad-output'),
 ])
 @app.callback(
@@ -123,12 +133,12 @@ app.layout = html.Div([
 )
 def buscar_estudiante(n_clicks, codigo):
     if not codigo:
-        return '', '',''
+        return '', 'https://upload.wikimedia.org/wikipedia/commons/5/59/Empty.png?20091205084734',''
 
     estudiante = df[df['Codigo'] == codigo]
 
     if estudiante.empty:
-        return 'Estudiante no encontrado', '',''
+        return 'Estudiante no encontrado', 'https://upload.wikimedia.org/wikipedia/commons/5/59/Empty.png?20091205084734',''
 
     nombre = estudiante.iloc[0]['nombre']
     imagen = estudiante.iloc[0]['imagen']

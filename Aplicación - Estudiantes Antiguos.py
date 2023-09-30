@@ -148,7 +148,8 @@ app.layout = html.Div(
                 html.Div(id='nuevaprob'),
                 html.Div(id='probdisplaced'),
                 html.H3(id='accuracyScore')
-            ]
+            ],
+            style={'width': '40%', 'display': 'inline-block','float':'left'}
         ),
         # Right column
         html.Div(
@@ -158,7 +159,7 @@ app.layout = html.Div(
                 dcc.Graph(
                     id='grafica'
                 )
-            ],style={'width': '55%', 'display': 'inline-block'}
+            ],style={'width': '55%', 'display': 'block','float':'left'}
         ),
     ],
 )
@@ -203,16 +204,16 @@ def buscar_estudiante(n_clicks, codigo):
         'approved_sem1_range':dictUniversidad['approved_sem1_range'][col],
         'grade_admission_range':dictUniversidad['grade_admission_range'][col],
     }
-    # Estudiante si fuese otro género
-    if estudianteCopia['Gender'] == 1:
-        estudianteCopia['Gender'] = 0
-    if estudianteCopia['Gender'] == 0:
-        estudianteCopia['Gender']= 1
+    # Estudiante si fuese debtor o no
+    if estudianteCopia['Debtor'] == 1:
+        estudianteCopia['Debtor'] = 0
+    if estudianteCopia['Debtor'] == 0:
+        estudianteCopia['Debtor']= 1
     # Hace una nueva inferencia
     casoNuevo = infer.query(["Target"],evidence = estudianteCopia)
     probabilidadNueva = casoNuevo.values[0]*100
 
-    # Estudiante si cambio en displaced
+    # Estudiante si cambio en scholarship holder
     estudianteCopia2 =  {
         'Gender':dictUniversidad['Gender'][col],
         'Displaced':dictUniversidad['Displaced'][col],
@@ -223,11 +224,11 @@ def buscar_estudiante(n_clicks, codigo):
         'approved_sem1_range':dictUniversidad['approved_sem1_range'][col],
         'grade_admission_range':dictUniversidad['grade_admission_range'][col],
     }    
-        # Estudiante si fuese otro género
-    if estudianteCopia2['Displaced'] == 1:
-        estudianteCopia2['Displaced'] = 0
-    if estudianteCopia2['Displaced'] == 0:
-        estudianteCopia2['Displaced']= 1
+        # Estudiante si fuese otro becado
+    if estudianteCopia2['Scholarship holder'] == 1:
+        estudianteCopia2['Scholarship holder'] = 0
+    if estudianteCopia2['Scholarship holder'] == 0:
+        estudianteCopia2['Scholarship holder']= 1
     # Hace una nueva inferencia
     casoNuevo2 = infer.query(["Target"],evidence = estudianteCopia2)
     probabilidadNueva2 = casoNuevo2.values[0]*100
@@ -251,7 +252,7 @@ def buscar_estudiante(n_clicks, codigo):
     # Crea la gráfica de barras del estudiante comun y el estudiante de interés
     data = [go.Bar(x=[nombre,'Estudiante Común'], y=[probabilidad_retiro, probEstudianteComun], marker=dict(color=['lightskyblue','pink']))]
     layout = go.Layout(title=f'Probabilidad de retirar: {nombre} vs. Estudiante Común')
-    return nombre, imagen, f'Probabilidad de retirarse: {probabilidad_retiro:.2f}%', f'Al cambiar el género de este estudiante... Su probabilidad de retirarse sería: {probabilidadNueva:.2f}%', f'Al cambiar si el estudiante es foráneo o no... Su probabilidad de retirarse sería: {probabilidadNueva2:.2f}%',f'Este modelo tiene un accuracy del: {accuracyScore:.2f}%',{'data': data, 'layout': layout}
+    return nombre, imagen, f'Probabilidad de retirarse: {probabilidad_retiro:.2f}%', f'Al cambiar si el estudiante es deudor o no... Su probabilidad de retirarse sería: {probabilidadNueva:.2f}%', f'Al cambiar si el estudiante es becado o no... Su probabilidad de retirarse sería: {probabilidadNueva2:.2f}%',f'Este modelo tiene un accuracy del: {accuracyScore:.2f}%',{'data': data, 'layout': layout}
 
 if __name__ == '__main__':
     app.run_server(debug=True)
